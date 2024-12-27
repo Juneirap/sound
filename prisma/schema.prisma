@@ -1,0 +1,55 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Type {
+  MusicCover
+  Mysong
+  Loop
+}
+
+model Media {
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String?     @default("")
+  imageurl    String
+  audioUrl    String
+  musicUrl    String?
+  type        Type
+  audioFiles  AudioFile[]
+}
+
+model AudioFile {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  fileUrl String
+  mediaId String @db.ObjectId
+  media   Media  @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+  userId  String @db.ObjectId
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum Role {
+  Producer
+  RegularUser
+  Admin
+}
+
+model User {
+  id            String      @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  email         String      @unique
+  password      String
+  description   String?     @default("")
+  imageuserUrl  String
+  Phone         String      @unique
+  youtubeUrl    String?
+  instargramUrl String?
+  FacebookUrl   String?
+  role          Role
+  audioFiles    AudioFile[]
+}
